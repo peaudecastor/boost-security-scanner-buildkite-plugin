@@ -1,0 +1,137 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+set -u
+
+#
+# State
+#
+declare -a TMP_FILES
+declare CONTAINER_ID
+
+#
+# Defaults
+#
+BOOST_SCANNER_VERSION=latest
+BOOST_DOCKER_IMAGE=227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner
+VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
+
+#
+# Helpers
+#
+container.stop ()
+{
+  if [ -n "${CONTAINER_ID:-}" ]; then
+    docker stop "${CONTAINER_ID}" &>/dev/null || true
+    unset CONTAINER_ID
+  fi
+}
+
+env.list ()
+{ awk 'BEGIN{for(v in ENVIRON) print v}'; }
+
+param.default ()
+{ # $1=param_suffix $2=default
+  declare param="${VAR_PREFIX}_${1}"
+  [ -n "${!param+x}" ] || export "${param}=${2:-}"
+}
+
+param.boost_to_envfile ()
+{ # -> tmp_file=""
+  tmp.create env
+
+  while read name; do
+    echo "${name}=${!name:-}" >> "${tmp_file}"
+  done < <(env.list | grep "BOOST_")
+
+  tmp_file="${TMP_FILES[-1]}"
+}
+
+param.remap_prefix ()
+{
+  while read name; do
+    export "${name/${VAR_PREFIX}/BOOST}=${!name:-}"
+  done < <(env.list | grep "${VAR_PREFIX}_")
+}
+
+tmp.create ()
+{ # $1=label, -> tmp_file=""
+  TMP_FILES+=($(mktemp -t boost-scanner.${1}.XXXXXX))
+  tmp_file="${TMP_FILES[-1]}"
+}
+
+tmp.clean ()
+{
+  for file in "${TMP_FILES[@]:-}"; do
+    if test -f "${file}"; then
+      rm -f "${file}"
+    fi
+  done
+
+  TMP_FILES=()
+}
+
+#
+# Main
+#
+main.exit ()
+{
+  container.stop
+  tmp.clean
+}
+
+main ()
+{
+  trap 'main.exit' EXIT
+
+  # Import default BuildKite variables
+  param.default "DIFF_SCAN" "true"
+  param.default "ORG_NAME" "${BUILDKITE_ORGANIZATION_SLUG:-}"
+  param.default "REPO_NAME" "${BUILDKITE_PIPELINE_SLUG:-}"
+  param.default "BRANCH_NAME" "${BUILDKITE_BRANCH:-}"
+  param.remap_prefix
+
+  # Import plugin configuration variables
+  param.boost_to_envfile
+  ENV_FILE="${tmp_file}"
+  unset tmp_file
+
+  BOOST_SCAN_REF="${BUILDKITE_COMMIT}"
+
+  if [ "${BOOST_DIFF_SCAN}" == "true" ]; then
+    BOOST_BASE_REF="${BUILDKITE_PULL_REQUEST_BASE_BRANCH:-}}"
+    BOOST_BASE_REF="${BASE_REF:-${BUILDKITE_PIPELINE_DEFAULT_BRANCH:-}}"
+
+    if [ -n "${BOOST_BASE_REF:-}" ]; then
+      BOOST_BASE_REF=$(git rev-parse "${BOOST_BASE_REF}")
+      BOOST_SCAN_REF="${BOOST_BASE_REF}..${BOOST_SCAN_REF}"
+    fi
+  fi
+
+  # Define command to execute
+  BOOST_PROJECT_NAME="${BOOST_ORG_NAME}/${BOOST_REPO_NAME}"
+
+  tmp.create cid
+  CID_FILE="${tmp_file}"
+  rm -f "${tmp_file}"
+  unset tmp_file
+
+  declare -a ARGS ; ARGS=(create
+    --cidfile "${CID_FILE}"
+    --env-file "${ENV_FILE}"
+    --entrypoint boost
+    --rm
+    "${BOOST_DOCKER_IMAGE}:${BOOST_SCANNER_VERSION}"
+    scan repo "${BOOST_PROJECT_NAME}" "${BOOST_BRANCH_NAME}"
+    "${BOOST_SCAN_REF}"
+    ${BOOST_ADDITIONAL_ARGS:-}
+  )
+
+  docker "${ARGS[@]}" > /dev/null
+  CONTAINER_ID=$(cat "${CID_FILE}")
+  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/." "${CONTAINER_ID}:/app/mount/"
+  docker start --attach "${CONTAINER_ID}" || true
+}
+
+main

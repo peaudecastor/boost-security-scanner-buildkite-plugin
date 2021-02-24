@@ -1,0 +1,7 @@
+steps:
+  - command: echo testing pipeline
+    plugins:
+      #- peaudecastor/boost-security-scan#v0.1.0:
+      - ssh://git@github.com/peaudecastor/boost-security-scanner-buildkite-plugin.git#master:
+          api_token: dummy token
+          additional_args: --report-stdout --no-report-upload

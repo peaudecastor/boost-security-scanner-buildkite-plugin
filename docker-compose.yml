@@ -1,0 +1,19 @@
+services:
+  lint:
+    image: buildkite/plugin-linter
+    command: ['--id', 'peaudecastor/boost-security-scanner']
+    volumes:
+      - ".:/plugin:ro"
+
+  shell:
+    image: buildkite/agent
+    entrypoint:
+      - bash
+    working_dir: /plugin
+    volumes:
+      - ".:/plugin:rw"
+
+  tests:
+    image: buildkite/plugin-tester
+    volumes:
+      - ".:/plugin:ro"

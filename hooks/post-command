@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+set -u
+
+BOOST_SCANNER_VERSION=latest
+BOOST_DOCKER_IMAGE=227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner
+DRY_RUN=${DRY_RUN:-false}
+ENV_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
+
+env.list ()
+{ awk 'BEGIN{for(v in ENVIRON) print v}'; }
+
+env.plugin_list ()
+{ env.list | grep "${ENV_PREFIX}"; }
+
+env.plugin_export_for_docker ()
+{
+ while read name; do
+   echo "${name/${ENV_PREFIX}/BOOST}='${!name:-}'" >> "${TMP_FILE}"
+ done < <(env.plugin_list)
+}
+
+main ()
+{
+  TMP_FILE=${TMP_FILE:-$(mktemp /tmp/boost-scanner.XXXXXX)}
+  trap 'rm -f ${TMP_FILE}' EXIT
+
+  # Import default BuildKite variables
+  BOOST_ORG_NAME=${BUILDKITE_ORGANIZATION_SLUG:-}
+  BOOST_REPO_NAME=${BUILDKITE_PIPELINE_SLUG:-}
+  BOOST_BRANCH_NAME=${BUILDKITE_BRANCH:-}
+
+  # Import plugin configuration variables
+  env.plugin_export_for_docker
+  source "${TMP_FILE}"
+
+  # Define command to execute
+  declare -a ARGS
+  declare BOOST_PROJECT_NAME
+  BOOST_PROJECT_NAME="${BOOST_ORG_NAME}/${BOOST_REPO_NAME}"
+
+  ARGS=(run --rm --env-file "${TMP_FILE}")
+  ARGS+=(--volume "${BUILDKITE_BUILD_CHECKOUT_PATH}:/app/mount")
+  ARGS+=(${BOOST_DOCKER_IMAGE}:${BOOST_SCANNER_VERSION})
+  ARGS+=(boost scan repo)
+  ARGS+=("${BOOST_PROJECT_NAME}" "${BOOST_BRANCH_NAME}" HEAD)
+  ARGS+=(${BOOST_ADDITIONAL_ARGS:-})
+
+  if ${DRY_RUN:-}; then
+    echo docker ${ARGS[@]}
+  else
+    docker ${ARGS[@]}
+    exit $?
+  fi
+}
+
+main

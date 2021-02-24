@@ -1,0 +1,6 @@
+steps:
+  - command: echo testing pipeline
+    plugins:
+      - peaudecastor/boost-security-scan#v0.1.0:
+          api_token: dummy token
+          additional_args: --full-scan

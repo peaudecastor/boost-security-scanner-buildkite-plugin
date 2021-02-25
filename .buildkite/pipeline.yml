@@ -1,6 +1,7 @@
 steps:
   - command: echo testing pipeline
     plugins:
-      - peaudecastor/boost-security-scan#v0.1.0:
+      #- peaudecastor/boost-security-scan#v0.1.0:
+      - ssh://git@github.com/my-org/my-plugin.git#v0.0.1:
           api_token: dummy token
           additional_args: --full-scan

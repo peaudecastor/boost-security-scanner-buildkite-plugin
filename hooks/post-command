@@ -23,8 +23,7 @@ VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 container.stop ()
 {
   if [ -n "${CONTAINER_ID:-}" ]; then
-    docker stop "${CONTAINER_ID}" > /dev/null
-
+    docker stop "${CONTAINER_ID}" || true &>/dev/null
     unset CONTAINER_ID
   fi
 }

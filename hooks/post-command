@@ -15,7 +15,7 @@ declare CONTAINER_ID
 #
 BOOST_SCANNER_VERSION=latest
 BOOST_DOCKER_IMAGE=227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner
-ENV_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
+VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 
 #
 # Helpers
@@ -23,16 +23,19 @@ ENV_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 env.list ()
 { awk 'BEGIN{for(v in ENVIRON) print v}'; }
 
+env.boost_list ()
+{ env.list | grep "BOOST_}"; }
+
 env.plugin_list ()
 { env.list | grep "${ENV_PREFIX}"; }
 
-env.plugin_export_for_docker ()
+env.boost_to_docker ()
 {
   declare tmp=$(tmp.create env)
 
   while read name; do
-    echo "${name/${ENV_PREFIX}/BOOST}=${!name:-}" >> "${tmp}"
-  done < <(env.plugin_list)
+    echo "${name}=${!name:-}" >> "${tmp}"
+  done < <(env.boost_list)
 
   echo "${tmp}"
 }
@@ -61,6 +64,18 @@ container.stop ()
   fi
 }
 
+param.default ()
+{ # $1=param_suffix $2=default
+  echo "${${VAR_PREFIX}_${1}:-${2}}"
+}
+
+param.remp_to_env ()
+{
+  while read name; do
+    declare -g "BOOST_${name}" "${!name:-}"
+  done < <(env.plugin_list)
+}
+
 #
 # Main
 #
@@ -76,15 +91,17 @@ main ()
   trap 'main.exit' EXIT
 
   # Import default BuildKite variables
-  BOOST_ORG_NAME=${BUILDKITE_ORGANIZATION_SLUG:-}
-  BOOST_REPO_NAME=${BUILDKITE_PIPELINE_SLUG:-}
-  BOOST_BRANCH_NAME=${BUILDKITE_BRANCH:-}
+  param.default "ORG_NAME" "${BUILDKITE_ORGANIZATION_SLUG:-}"
+  param.default "REPO_NAME" "${BUILDKITE_PIPELINE_SLUG:-}"
+  param.default "BRANCH_NAME" "${BUILDKITE_BRANCH:-}"
+  param.remap_to_env
 
   # Import plugin configuration variables
   ENV_FILE=$(env.plugin_export_for_docker)
+  env |grep BOOST
+  env |grep BUILDKITE
   cat "${ENV_FILE}"
-  source "${ENV_FILE}"
-  
+
   # Define command to execute
   declare -a ARGS
   BOOST_PROJECT_NAME="${BOOST_ORG_NAME}/${BOOST_REPO_NAME}"

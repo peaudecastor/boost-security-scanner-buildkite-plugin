@@ -4,4 +4,4 @@ steps:
       #- peaudecastor/boost-security-scan#v0.1.0:
       - ssh://git@github.com/peaudecastor/boost-security-scanner-buildkite-plugin.git#master:
           api_token: dummy token
-          additional_args: --ignore-policy --report-stdout --no-report-upload
+          additional_args: --report-stdout --no-report-upload

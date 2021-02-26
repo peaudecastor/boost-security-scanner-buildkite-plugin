@@ -107,7 +107,8 @@ main ()
   )
 
   set -x
-  docker "${ARGS[@]}" > /dev/null
+  docker create  --cidfile "${CID_FILE}" --env-file "${ENV_FILE}" -ti --detach "${BOOST_DOCKER_IMAGE}:${BOOST_SCANNER_VERSION}" bash
+  #docker "${ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
 
   docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}" "${CONTAINER_ID}:/app/mount/"

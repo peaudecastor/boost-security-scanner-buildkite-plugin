@@ -106,7 +106,6 @@ main ()
     ${BOOST_ADDITIONAL_ARGS:-}
   )
 
-  set -x
   docker "${ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
 

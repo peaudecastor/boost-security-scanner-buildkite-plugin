@@ -1,7 +1,8 @@
 # Boost Security Scanner BuildKite Plugin
 
 Executes the Boost Security Scanner cli tool to scan repositories for
-vulnerabilities and uploads results to the Boost API.
+vulnerabilities and uploads results to the Boost API. This plugin
+runs as a post-command hook.
 
 ## Example
 
@@ -9,7 +10,7 @@ Add the following to your `pipeline.yml`:
 
 ```yml
 steps:
-  - command: ls
+  - command: YOUR BUILD COMMAND HERE
     plugins:
       - peaudecastor/boost-security-scanner#v0.1.0:
           api_token: 'TOKEN'
@@ -48,6 +49,6 @@ This will default to the Repository slug defined in BuildKite.
 To run the tests:
 
 ```shell
-docker-compose run --rm lint
-docker-compose run --rm tests
+make lint
+make tests
 ```

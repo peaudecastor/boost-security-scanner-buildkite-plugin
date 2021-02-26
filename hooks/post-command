@@ -23,7 +23,7 @@ VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 container.stop ()
 {
   if [ -n "${CONTAINER_ID:-}" ]; then
-    docker stop "${CONTAINER_ID}"
+    docker stop "${CONTAINER_ID}" > /dev/null
 
     unset CONTAINER_ID
   fi
@@ -106,7 +106,8 @@ main ()
     ${BOOST_ADDITIONAL_ARGS:-}
   )
 
-  docker "${ARGS[@]}"
+  set -x
+  docker "${ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
 
   docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}" "${CONTAINER_ID}:/app/mount"

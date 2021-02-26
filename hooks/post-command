@@ -86,6 +86,7 @@ main ()
   trap 'main.exit' EXIT
 
   # Import default BuildKite variables
+  param.default "DIFF_SCAN" "true"
   param.default "ORG_NAME" "${BUILDKITE_ORGANIZATION_SLUG:-}"
   param.default "REPO_NAME" "${BUILDKITE_PIPELINE_SLUG:-}"
   param.default "BRANCH_NAME" "${BUILDKITE_BRANCH:-}"
@@ -95,6 +96,18 @@ main ()
   param.boost_to_envfile
   ENV_FILE="${tmp_file}"
   unset tmp_file
+
+  BOOST_SCAN_REF="${BUILDKITE_COMMIT}"
+
+  if [ "${BOOST_DIFF_SCAN}" == "true" ]; then
+    BOOST_BASE_REF="${BUILDKITE_PULL_REQUEST_BASE_BRANCH:-}}"
+    BOOST_BASE_REF="${BASE_REF:-${BUILDKITE_PIPELINE_DEFAULT_BRANCH:-}}"
+
+    if [ -n "${BOOST_BASE_REF:-}" ]; then
+      BOOST_BASE_REF=$(git rev-parse "${BOOST_BASE_REF}")
+      BOOST_SCAN_REF="${BOOST_BASE_REF}..${BOOST_SCAN_REF}"
+    fi
+  fi
 
   # Define command to execute
   BOOST_PROJECT_NAME="${BOOST_ORG_NAME}/${BOOST_REPO_NAME}"
@@ -110,7 +123,8 @@ main ()
     --entrypoint boost
     --rm
     "${BOOST_DOCKER_IMAGE}:${BOOST_SCANNER_VERSION}"
-    scan repo "${BOOST_PROJECT_NAME}" "${BOOST_BRANCH_NAME}" HEAD
+    scan repo "${BOOST_PROJECT_NAME}" "${BOOST_BRANCH_NAME}"
+    "${BOOST_SCAN_REF}"
     ${BOOST_ADDITIONAL_ARGS:-}
   )
 

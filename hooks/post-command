@@ -93,11 +93,10 @@ main ()
   ENV_FILE=$(param.boost_to_envfile)
 
   # Define command to execute
-  declare -a ARGS
   BOOST_PROJECT_NAME="${BOOST_ORG_NAME}/${BOOST_REPO_NAME}"
-  CID_FILE=$(tmp.create cid)
+  CID_FILE=$(tmp.create cid) ; rm -f "${CID_FILE}"
 
-  ARGS=(create
+  declare -a ARGS ; ARGS=(create
     --cidfile "${CID_FILE}"
     --env-file "${ENV_FILE}"
     --entrypoint boost

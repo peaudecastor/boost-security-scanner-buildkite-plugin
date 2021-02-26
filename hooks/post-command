@@ -20,24 +20,39 @@ VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 #
 # Helpers
 #
+container.stop ()
+{
+  if [ -n "${CONTAINER_ID:-}" ]; then
+    docker stop "${CONTAINER_ID}"
+
+    unset CONTAINER_ID
+  fi
+}
+
 env.list ()
 { awk 'BEGIN{for(v in ENVIRON) print v}'; }
 
-env.boost_list ()
-{ env.list | grep "BOOST_}"; }
+param.default ()
+{ # $1=param_suffix $2=default
+  declare param="${VAR_PREFIX}_${1}"
+  [ -n "${!param+x}" ] || export "${param}=${2:-}"
+}
 
-env.plugin_list ()
-{ env.list | grep "${ENV_PREFIX}"; }
-
-env.boost_to_docker ()
+param.boost_to_envfile ()
 {
   declare tmp=$(tmp.create env)
+  echo "${tmp}"
 
   while read name; do
     echo "${name}=${!name:-}" >> "${tmp}"
-  done < <(env.boost_list)
+  done < <(env.list | grep "BOOST_")
+}
 
-  echo "${tmp}"
+param.remap_prefix ()
+{
+  while read name; do
+    export "${name/${VAR_PREFIX}/BOOST}=${!name:-}"
+  done < <(env.list | grep "${VAR_PREFIX}_")
 }
 
 tmp.create ()
@@ -55,27 +70,6 @@ tmp.clean ()
   TMP_FILES=()
 }
 
-container.stop ()
-{
-  if [ -n "${CONTAINER_ID:-}" ]; then
-    docker stop "${CONTAINER_ID}"
-
-    unset CONTAINER_ID
-  fi
-}
-
-param.default ()
-{ # $1=param_suffix $2=default
-  echo "${${VAR_PREFIX}_${1}:-${2}}"
-}
-
-param.remp_to_env ()
-{
-  while read name; do
-    declare -g "BOOST_${name}" "${!name:-}"
-  done < <(env.plugin_list)
-}
-
 #
 # Main
 #
@@ -87,20 +81,16 @@ main.exit ()
 
 main ()
 {
-  set -x
   trap 'main.exit' EXIT
 
   # Import default BuildKite variables
   param.default "ORG_NAME" "${BUILDKITE_ORGANIZATION_SLUG:-}"
   param.default "REPO_NAME" "${BUILDKITE_PIPELINE_SLUG:-}"
   param.default "BRANCH_NAME" "${BUILDKITE_BRANCH:-}"
-  param.remap_to_env
+  param.remap_prefix
 
   # Import plugin configuration variables
-  ENV_FILE=$(env.plugin_export_for_docker)
-  env |grep BOOST
-  env |grep BUILDKITE
-  cat "${ENV_FILE}"
+  ENV_FILE=$(param.boost_to_envfile)
 
   # Define command to execute
   declare -a ARGS
@@ -125,4 +115,3 @@ main ()
 }
 
 main
-

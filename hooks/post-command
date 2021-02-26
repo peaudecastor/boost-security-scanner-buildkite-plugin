@@ -110,7 +110,7 @@ main ()
   docker "${ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
 
-  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}" "${CONTAINER_ID}:/app/mount"
+  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}" "${CONTAINER_ID}:/app/mount/"
   docker start --attach "${CONTAINER_ID}"
 }
 

@@ -42,7 +42,7 @@ setup () {
   )
   docker_create="${docker_create[@]}"
 
-  docker_cp=(docker cp "${PWD}" "test:/app/mount")
+  docker_cp=(docker cp "${PWD}" "test:/app/mount/")
   docker_start=(docker start --attach "test")
   docker_stop=(docker stop "test")
 

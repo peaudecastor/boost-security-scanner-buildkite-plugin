@@ -10,7 +10,7 @@ Add the following to your `pipeline.yml`:
 
 ```yml
 steps:
-  - command: YOUR BUILD COMMAND HERE
+  - command: echo Starting scanner
     plugins:
       - peaudecastor/boost-security-scanner#v0.1.0:
           api_token: 'TOKEN'

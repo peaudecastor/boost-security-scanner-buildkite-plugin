@@ -112,7 +112,7 @@ main ()
   #docker "${ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
 
-  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/${BUILDKITE_PIPELINE_SLUG}" "${CONTAINER_ID}:/app/mount/"
+  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/" "${CONTAINER_ID}:/app/mount/"
   echo "${CONTAINER_ID}"
   docker start --attach "${CONTAINER_ID}" || true
   sleep 6000

@@ -23,7 +23,7 @@ VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 container.stop ()
 {
   if [ -n "${CONTAINER_ID:-}" ]; then
-    docker stop "${CONTAINER_ID}" || true &>/dev/null
+    docker stop "${CONTAINER_ID}" &>/dev/null || true
     unset CONTAINER_ID
   fi
 }
@@ -63,6 +63,7 @@ tmp.create ()
 tmp.clean ()
 {
   for file in "${TMP_FILES[@]:-}"; do
+    echo "tmp.clean ${file}"
     if test -f "${file}"; then
       rm -f "${file}"
     fi
@@ -92,12 +93,10 @@ main ()
 
   # Import plugin configuration variables
   ENV_FILE=$(param.boost_to_envfile)
-  echo "${TMP_FILES[@]:-}"
 
   # Define command to execute
   BOOST_PROJECT_NAME="${BOOST_ORG_NAME}/${BOOST_REPO_NAME}"
   CID_FILE=$(tmp.create cid) ; rm -f "${CID_FILE}"
-  echo "${TMP_FILES[@]:-}"
 
   declare -a ARGS ; ARGS=(create
     --cidfile "${CID_FILE}"

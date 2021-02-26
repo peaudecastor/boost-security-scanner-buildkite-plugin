@@ -107,15 +107,10 @@ main ()
   )
 
   set -x
-  docker create  --cidfile "${CID_FILE}" --env-file "${ENV_FILE}" -ti \
-  "${BOOST_DOCKER_IMAGE}:${BOOST_SCANNER_VERSION}" ls /app/mount
-  #docker "${ARGS[@]}" > /dev/null
+  docker "${ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
-
-  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/" "${CONTAINER_ID}:/app/mount/"
-  echo "${CONTAINER_ID}"
+  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/." "${CONTAINER_ID}:/app/mount/"
   docker start --attach "${CONTAINER_ID}" || true
-  sleep 6000
 }
 
 main

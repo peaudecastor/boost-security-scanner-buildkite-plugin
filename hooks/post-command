@@ -111,7 +111,7 @@ main ()
   CONTAINER_ID=$(cat "${CID_FILE}")
 
   docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}" "${CONTAINER_ID}:/app/mount/"
-  docker exec -ti "${CONTAINER_ID}" ls /app/mount/
+  docker rm --rm -ti --entrypoint ls "${CONTAINER_ID}" /app/mount/
   docker start --attach "${CONTAINER_ID}"
 }
 

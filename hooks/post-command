@@ -87,6 +87,7 @@ main ()
 
   # Import default BuildKite variables
   param.default "DIFF_SCAN" "true"
+  param.default "FAIL_ON_ERROR" "true"
   param.default "ORG_NAME" "${BUILDKITE_ORGANIZATION_SLUG:-}"
   param.default "REPO_NAME" "${BUILDKITE_PIPELINE_SLUG:-}"
   param.default "BRANCH_NAME" "${BUILDKITE_BRANCH:-}"
@@ -131,7 +132,12 @@ main ()
   docker "${ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
   docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/." "${CONTAINER_ID}:/app/mount/"
-  docker start --attach "${CONTAINER_ID}" || true
+
+  if ! docker start --attach "${CONTAINER_ID}"; then
+    if [ "${BOOST_FAIL_ON_ERORR}" == "true" ]; then
+      exit 1
+    fi
+  fi
 }
 
 main

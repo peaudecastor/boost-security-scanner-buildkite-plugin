@@ -21,6 +21,9 @@ configuration:
     diff_scan:
       description: Toggle scanner to perform diff scans
       type: boolean
+    fail_on_error:
+      description: Toggle plugin to fail pipeline on error
+      type: boolean
     scanner_version:
       description: Boost Security scanner version override
       type: string

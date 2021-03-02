@@ -37,6 +37,11 @@ changed between two commits. During execution time, the plugin will attempt
 to locate the commit at the HEAD of either `BUILDKITE_PULL_REQUEST_BASE_BRANCH`
 or `BUILDKITE_PIPELINE_DEFAULT_BRANCH`.
 
+### `fail_on_error` (Optional, boolean, default=true)
+
+Indicates that the scanner should exit with a non-zero exit status when it
+encounters an error or a policy violation.
+
 ### `scanner_version` (Optional, string)
 
 Overrides the docker image to load when performing scans

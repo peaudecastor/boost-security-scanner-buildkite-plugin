@@ -4,18 +4,16 @@ load '/usr/local/lib/bats/load.bash'
 
 setup () {
   export BOOST_DOCKER_IMAGE=227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner
-  export BUILDKITE_ORGANIZATION_SLUG=testorg
-  export BUILDKITE_PIPELINE_SLUG=testrepo
-  export BUILDKITE_BRANCH=testbranch
+  export BUILDKITE_BRANCH=master
   export BUILDKITE_BUILD_CHECKOUT_PATH=${PWD}
+  export BUILDKITE_COMMIT=commit
+  export BUILDKITE_ORGANIZATION_SLUG=org
+  export BUILDKITE_PIPELINE_DEFAULT_BRANCH=master
+  export BUILDKITE_PIPELINE_SLUG=repo
 }
 
-@test "Run would execute a docker container" {
-  export TEST_RUN=true
-
-  DOCKER="/usr/bin/env docker"
-  MKTEMP="/usr/bin/env mktemp"
-
+setup.stubs ()
+{
   docker ()
   { # $@=args
     echo docker "${@}"
@@ -25,12 +23,16 @@ setup () {
   }
 
   mktemp ()
-  { # $1=pattern
-    touch "${1}" && echo "${@}"
+  { # $1=-T, $2=pattern
+    touch "/tmp/${2}" && echo "/tmp/${2}"
   }
 
   export -f docker
   export -f mktemp
+}
+
+@test "Would run full scan" {
+  setup.stubs
 
   docker_create=(docker create
     --cidfile "/tmp/boost-scanner.cid.XXXXXX"
@@ -38,7 +40,9 @@ setup () {
     --entrypoint boost
     --rm
     "${BOOST_DOCKER_IMAGE}:latest"
-    scan repo testorg/testrepo testbranch HEAD
+    scan ci org/repo master
+    commit
+    --main-branch master
   )
   docker_create="${docker_create[@]}"
 
@@ -54,12 +58,41 @@ setup () {
   assert_output --partial "${docker_start[@]}"
   assert_output --partial "${docker_stop[@]}"
 
-  unset docker
-  unset mktemp
-
-  # bats stub/mock doesnt seem to work
-  # stub docker "${args[@]} : echo docker-run"
-  # unstub docker
+  unset docker mktemp
 }
 
+@test "Would run diff scan" {
+  export BUILDKITE_PULL_REQUEST_BASE_BRANCH=other
+  export BUILDKITE_PULL_REQUEST=000
+
+  setup.stubs
+
+  docker_create=(docker create
+    --cidfile "/tmp/boost-scanner.cid.XXXXXX"
+    --env-file "/tmp/boost-scanner.env.XXXXXX"
+    --entrypoint boost
+    --rm
+    "${BOOST_DOCKER_IMAGE}:latest"
+    scan ci org/repo master
+    "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}..commit"
+    --main-branch master
+    --pull-request "${BUILDKITE_PULL_REQUEST}"
+  )
+  docker_create="${docker_create[@]}"
+
+  docker_cp=(docker cp "${PWD}/." "test:/app/mount/")
+  docker_start=(docker start --attach "test")
+  docker_stop=(docker stop "test")
+
+  run ${PWD}/hooks/post-command
+  assert_success
+
+  assert_output --partial "${docker_create[@]}"
+  assert_output --partial "${docker_cp[@]}"
+  assert_output --partial "${docker_start[@]}"
+  assert_output --partial "${docker_stop[@]}"
+
+  unset docker mktemp
+  unset BUILDKITE_PULL_REQUEST_BASE_BRANCH
+}
 # vim: set ft=bash ts=2 sw=2 et :

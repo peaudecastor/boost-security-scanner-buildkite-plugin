@@ -18,9 +18,6 @@ configuration:
     api_token:
       description: Boost Security API token
       type: string
-    diff_scan:
-      description: Toggle scanner to perform diff scans
-      type: boolean
     fail_on_error:
       description: Toggle plugin to fail pipeline on error
       type: boolean

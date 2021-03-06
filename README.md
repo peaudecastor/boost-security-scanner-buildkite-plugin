@@ -30,6 +30,11 @@ Overrides the API endpoint url
 
 The Boost Security API token
 
+### `docker_create_args` (Optional, string)
+
+Optional additional arguments to pass to `docker create` when preparing the
+scanner container.
+
 ### `fail_on_error` (Optional, boolean, default=true)
 
 Indicates that the scanner should exit with a non-zero exit status when it

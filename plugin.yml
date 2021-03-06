@@ -18,6 +18,9 @@ configuration:
     api_token:
       description: Boost Security API token
       type: string
+    docker_create_args:
+      description: Additional arguments to pass to the docker create step
+      type: string
     fail_on_error:
       description: Toggle plugin to fail pipeline on error
       type: boolean

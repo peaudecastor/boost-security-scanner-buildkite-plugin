@@ -112,7 +112,7 @@ main ()
     --cidfile "${CID_FILE}"
     --env-file "${ENV_FILE}"
     --entrypoint boost
-    --rm
+    --rm ${BOOST_DOCKER_CREATE_ARGS:-}
     "${BOOST_DOCKER_IMAGE}:${BOOST_SCANNER_VERSION}"
   )
 

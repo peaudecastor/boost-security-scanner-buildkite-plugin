@@ -24,6 +24,9 @@ configuration:
     fail_on_error:
       description: Toggle plugin to fail pipeline on error
       type: boolean
+    scanner_image:
+      description: Boost Security scanner image url override
+      type: string
     scanner_version:
       description: Boost Security scanner version override
       type: string

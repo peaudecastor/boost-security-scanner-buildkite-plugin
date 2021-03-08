@@ -13,8 +13,8 @@ declare CONTAINER_ID
 #
 # Defaults
 #
-BOOST_SCANNER_VERSION=latest
-BOOST_DOCKER_IMAGE=227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner
+BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner}
+BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-latest}
 VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 
 #
@@ -113,7 +113,7 @@ main ()
     --env-file "${ENV_FILE}"
     --entrypoint boost
     --rm ${BOOST_DOCKER_CREATE_ARGS:-}
-    "${BOOST_DOCKER_IMAGE}:${BOOST_SCANNER_VERSION}"
+    "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
   )
 
   CREATE_ARGS+=(scan ci "${BOOST_ORG_NAME}/${BOOST_REPO_NAME}")

@@ -40,9 +40,13 @@ scanner container.
 Indicates that the scanner should exit with a non-zero exit status when it
 encounters an error or a policy violation.
 
+### `scanner_image` (Optional, string)
+
+Overrides the docker image url to load when performing scans
+
 ### `scanner_version` (Optional, string)
 
-Overrides the docker image to load when performing scans
+Overrides the docker image tag to load when performing scans
 
 ### `org_name` (Optional, string)
 

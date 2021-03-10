@@ -11,13 +11,6 @@ declare -a TMP_FILES
 declare CONTAINER_ID
 
 #
-# Defaults
-#
-BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner}
-BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-latest}
-VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
-
-#
 # Helpers
 #
 container.stop ()
@@ -71,6 +64,8 @@ main ()
   # Local vars
   #
   declare tmp_file
+  declare VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
+
 
   #
   # Remap plugin parameters to BOOST_ environment vars
@@ -82,10 +77,16 @@ main ()
   #
   # Define default values
   #
-  declare BOOST_FAIL_ON_ERROR=${BOOST_FAIL_ON_ERROR:-"true"}
-  declare BOOST_ORG_NAME=${BOOST_ORG_NAME:-${BUILDKITE_ORGANIZATION_SLUG:-}}
-  declare BOOST_REPO_NAME=${BOOST_REPO_NAME:-${BUILDKITE_PIPELINE_SLUG:-}}
   declare BOOST_BRANCH_NAME=${BOOST_BRANCH_NAME:-${BUILDKITE_BRANCH:-}}
+  declare BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner}
+  declare BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-latest}
+  declare BOOST_PROJECT_SLUG=${BOOST_PROJECT_SLUG:-}
+
+  if [ -z "${BOOST_PROJECT_SLUG:-}" ]; then
+    BOOST_PROJECT_SLUG=$(echo "${BUILDKITE_REPO}" | \
+      sed -r 's/.*(\@|\/\/)(.*)(\:|\/)([^:\/]*)\/([^\/\.]*)(\.git)?/\4\/\5/'
+    )
+  fi
 
   #
   # Create docker env file
@@ -116,7 +117,7 @@ main ()
     "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
   )
 
-  CREATE_ARGS+=(scan ci "${BOOST_ORG_NAME}/${BOOST_REPO_NAME}")
+  CREATE_ARGS+=(scan ci "${BOOST_PROJECT_SLUG}")
   CREATE_ARGS+=("${BOOST_BRANCH_NAME}")
 
   declare headref=${BUILDKITE_COMMIT}
@@ -148,12 +149,7 @@ main ()
   CONTAINER_ID=$(cat "${CID_FILE}")
 
   docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/." "${CONTAINER_ID}:/app/mount/"
-
-  if ! docker start --attach "${CONTAINER_ID}"; then
-    if [ "${BOOST_FAIL_ON_ERROR}" == "true" ]; then
-      exit 1
-    fi
-  fi
+  docker start --attach "${CONTAINER_ID}"
 }
 
 main

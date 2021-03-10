@@ -35,10 +35,10 @@ The Boost Security API token
 Optional additional arguments to pass to `docker create` when preparing the
 scanner container.
 
-### `fail_on_error` (Optional, boolean, default=true)
+### `project_slug` (Optional, string)
 
-Indicates that the scanner should exit with a non-zero exit status when it
-encounters an error or a policy violation.
+Optional override for the project unique identifier. If undefined, this will
+default to the relative path derived from BUILDKITE\_REPO.
 
 ### `scanner_image` (Optional, string)
 
@@ -47,16 +47,6 @@ Overrides the docker image url to load when performing scans
 ### `scanner_version` (Optional, string)
 
 Overrides the docker image tag to load when performing scans
-
-### `org_name` (Optional, string)
-
-Overrides the Organization slug when uploading reports to Boost Security.
-This will default to the Organization slug defined in BuildKite.
-
-### `repo_name` (Optional, string)
-
-Overrides the Repository slug when uploading reports to Boost Security.
-This will default to the Repository slug defined in BuildKite.
 
 ## Developing
 

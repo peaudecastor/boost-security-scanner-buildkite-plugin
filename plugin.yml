@@ -21,20 +21,14 @@ configuration:
     docker_create_args:
       description: Additional arguments to pass to the docker create step
       type: string
-    fail_on_error:
-      description: Toggle plugin to fail pipeline on error
-      type: boolean
+    project_slug:
+      description: Project unique name in the orgname/reponame form
+      type: string
     scanner_image:
       description: Boost Security scanner image url override
       type: string
     scanner_version:
       description: Boost Security scanner version override
-      type: string
-    org_name:
-      description: Repository organization name override
-      type: string
-    repo_name:
-      description: Repository slug name override
       type: string
   additionalProperties: false
   required:

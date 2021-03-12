@@ -10,6 +10,7 @@ setup () {
   export BUILDKITE_ORGANIZATION_SLUG=org
   export BUILDKITE_PIPELINE_DEFAULT_BRANCH=master
   export BUILDKITE_PIPELINE_SLUG=repo
+  export BUILDKITE_REPO="https://github.com/org/repo.git"
 }
 
 setup.stubs ()

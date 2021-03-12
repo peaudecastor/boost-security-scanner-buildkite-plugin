@@ -32,8 +32,8 @@ env.list.boost ()
 
 tmp.create ()
 { # $1=label
-  TMP_FILES+=($(mktemp -t boost-scanner.${1}.XXXXXX))
-  tmp_file="${TMP_FILES[-1]}"
+  tmp_file=$(mktemp -t boost-scanner.${1}.XXXXXX)
+  TMP_FILES+=(${tmp_file})
 }
 
 tmp.clean ()

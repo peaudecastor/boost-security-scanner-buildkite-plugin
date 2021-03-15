@@ -71,16 +71,16 @@ main ()
   # Remap plugin parameters to BOOST_ environment vars
   #
   while read name; do
-    declare "${name/${VAR_PREFIX}/BOOST}=${!name:-}"
+    export "${name/${VAR_PREFIX}/BOOST}=${!name:-}"
   done < <(env.list.params)
 
   #
   # Define default values
   #
-  declare BOOST_BRANCH_NAME=${BOOST_BRANCH_NAME:-${BUILDKITE_BRANCH:-}}
-  declare BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner}
-  declare BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-latest}
-  declare BOOST_PROJECT_SLUG=${BOOST_PROJECT_SLUG:-}
+  export BOOST_BRANCH_NAME=${BOOST_BRANCH_NAME:-${BUILDKITE_BRANCH:-}}
+  export BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner}
+  export BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-latest}
+  export BOOST_PROJECT_SLUG=${BOOST_PROJECT_SLUG:-}
 
   if [ -z "${BOOST_PROJECT_SLUG:-}" ]; then
     BOOST_PROJECT_SLUG=$(echo "${BUILDKITE_REPO}" | \
@@ -144,8 +144,7 @@ main ()
   #
   # Launch containers
   #
-  docker "${CREATE_ARGS[@]}"
-  # > /dev/null
+  docker "${CREATE_ARGS[@]}" > /dev/null
   CONTAINER_ID=$(cat "${CID_FILE}")
 
   docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/." "${CONTAINER_ID}:/app/mount/"

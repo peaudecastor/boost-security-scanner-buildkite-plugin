@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.0..HEAD)
 
+- Update tests with image overrides
 
 ## 1.0.0 - 2020-03-16 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/releases/tag/v1.0.0)
 

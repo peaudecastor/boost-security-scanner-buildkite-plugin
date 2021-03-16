@@ -3,7 +3,8 @@
 load '/usr/local/lib/bats/load.bash'
 
 setup () {
-  export BOOST_DOCKER_IMAGE=227492184095.dkr.ecr.us-east-2.amazonaws.com/checks-runner
+  export BOOST_SCANNER_IMAGE=706352083976.dkr.ecr.us-east-2.amazonaws.com/scanner
+  export BOOST_SCANNER_VERSION=test
   export BUILDKITE_BRANCH=master
   export BUILDKITE_BUILD_CHECKOUT_PATH=${PWD}
   export BUILDKITE_COMMIT=commit
@@ -40,7 +41,7 @@ setup.stubs ()
     --env-file "/tmp/boost-scanner.env.XXXXXX"
     --entrypoint boost
     --rm
-    "${BOOST_DOCKER_IMAGE}:latest"
+    "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
     scan ci org/repo master
     commit
     --main-branch master
@@ -73,7 +74,7 @@ setup.stubs ()
     --env-file "/tmp/boost-scanner.env.XXXXXX"
     --entrypoint boost
     --rm
-    "${BOOST_DOCKER_IMAGE}:latest"
+    "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
     scan ci org/repo master
     "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}..commit"
     --main-branch master

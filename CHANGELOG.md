@@ -10,4 +10,4 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Initial release of boost-security-scanner
-- Initial release of Boost CI
+- Initial release of Boost CI version v1.0.0

@@ -18,6 +18,12 @@ steps:
 
 ## Configuration
 
+All pipeline options listed below may be configured either by specying the
+`key:value` pair in the plugin configuration or by exporting environment
+variables in your buildkite environment. All such environment variables should
+be capitalized and prefixed with either `BOOST` or
+`BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER`.
+
 ### `additional_args` (Optional, list[str])
 
 Additional CLI args to pass to the `boost` cli.
@@ -28,7 +34,11 @@ Overrides the API endpoint url
 
 ### `api_token` (Required, string)
 
-The Boost Security API token
+The Boost Security API token secret.
+
+**NOTE**: We recommend you not put the API token directly in your pipeline.yml
+file. Intead, either expose the environment variable or refer to Builtkite's
+[secrets management document](https://buildkite.com/docs/pipelines/secrets).
 
 ### `docker_create_args` (Optional, string)
 

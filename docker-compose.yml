@@ -1,3 +1,5 @@
+version: "3"
+
 services:
   lint:
     image: buildkite/plugin-linter

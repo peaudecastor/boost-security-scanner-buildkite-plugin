@@ -24,12 +24,18 @@ setup.stubs ()
     fi
   }
 
+  git ()
+  { # $@=args
+    echo git "${@}"
+  }
+
   mktemp ()
   { # $1=-T, $2=pattern
     touch "/tmp/${2}" && echo "/tmp/${2}"
   }
 
   export -f docker
+  export -f git
   export -f mktemp
 }
 
@@ -60,7 +66,7 @@ setup.stubs ()
   assert_output --partial "${docker_start[@]}"
   assert_output --partial "${docker_stop[@]}"
 
-  unset docker mktemp
+  unset docker git mktemp
 }
 
 @test "Would run diff scan" {
@@ -92,9 +98,10 @@ setup.stubs ()
   assert_output --partial "${docker_create[@]}"
   assert_output --partial "${docker_cp[@]}"
   assert_output --partial "${docker_start[@]}"
+  assert_output --partial "git fetch origin ${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
   assert_output --partial "${docker_stop[@]}"
 
-  unset docker mktemp
+  unset docker git mktemp
   unset BUILDKITE_PULL_REQUEST_BASE_BRANCH
 }
 # vim: set ft=bash ts=2 sw=2 et :

@@ -98,7 +98,7 @@ setup.stubs ()
   assert_output --partial "${docker_create[@]}"
   assert_output --partial "${docker_cp[@]}"
   assert_output --partial "${docker_start[@]}"
-  assert_output --partial "git fetch origin ${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+  assert_output --partial "git fetch origin ${BUILDKITE_PULL_REQUEST_BASE_BRANCH}:${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
   assert_output --partial "${docker_stop[@]}"
 
   unset docker git mktemp

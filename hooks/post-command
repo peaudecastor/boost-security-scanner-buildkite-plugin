@@ -159,6 +159,11 @@ main ()
   if [ -n "${baseref:-}" ]; then
     log.info "Base branch detected, fetching ${baseref}"
     git fetch --force origin "${baseref}:${baseref}"
+
+    if $(git rev-parse --is-shallow-repository); then
+      log.info "Shallow repository detected, fetching complete tree"
+      git fetch --unshallow
+    fi
   fi
 
   log.info "Creating docker container"

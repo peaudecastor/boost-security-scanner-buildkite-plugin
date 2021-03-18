@@ -12,6 +12,10 @@ Add the following to your `pipeline.yml`:
 steps:
   - command: YOUR BUILD COMMAND HERE
     plugins:
+      - ecr#v2.3.0:
+          login: true
+          account_ids: "706352083976"
+          region: "us-east-2"
       - peaudecastor/boost-security-scanner#v1.0.0:
           api_token: 'TOKEN'
 ```

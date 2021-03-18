@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.0..HEAD)
 
+- Update README with ecr login
 - Update tests with image overrides
 - Update hook ensuring we fetch commits from the base branch when a PR is detected
 

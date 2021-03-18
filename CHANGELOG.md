@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.1..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.2..HEAD)
+
+## 1.0.2 - 2020-03-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.1..v1.0.2)
 
 - Add additional hook output
 - Update diff scans to fetch --force base branch

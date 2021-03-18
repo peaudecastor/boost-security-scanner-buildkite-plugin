@@ -13,6 +13,9 @@ declare CONTAINER_ID
 #
 # Helpers
 #
+log.info ()
+{ echo "[Plugin] ${*}"; }
+
 container.stop ()
 {
   if [ -n "${CONTAINER_ID:-}" ]; then
@@ -124,15 +127,17 @@ main ()
   CREATE_ARGS+=(scan ci "${BOOST_PROJECT_SLUG}")
   CREATE_ARGS+=("${BOOST_BRANCH_NAME}")
 
+  declare scanref
   declare headref=${BUILDKITE_COMMIT}
   declare baseref=${BUILDKITE_PULL_REQUEST_BASE_BRANCH:-}
 
   if [ -n "${baseref}" ]; then
-    git fetch origin "${baseref}:${baseref}"
-    CREATE_ARGS+=("${baseref}..${headref}")
+    scanref="${baseref}..${headref}"
   else
-    CREATE_ARGS+=("${headref}")
+    scanref="${headref}"
   fi
+
+  CREATE_ARGS+=("${scanref}")
 
   if [ -n "${BUILDKITE_PIPELINE_DEFAULT_BRANCH:-}" ]; then
     CREATE_ARGS+=(--main-branch "${BUILDKITE_PIPELINE_DEFAULT_BRANCH}")
@@ -149,10 +154,19 @@ main ()
   #
   # Launch containers
   #
+  log.info "Initializing"
+
+  if [ -n "${baseref:-}" ]; then
+    log.info "Base branch detected, fetching ${baseref}"
+    git fetch --force origin "${baseref}:${baseref}"
+  fi
+
+  log.info "Creating docker container"
   docker "${CREATE_ARGS[@]}"
   CONTAINER_ID=$(cat "${CID_FILE}")
-
   docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/." "${CONTAINER_ID}:/app/mount/"
+
+  log.info "Starting scanner for ${scanref}"
   docker start --attach "${CONTAINER_ID}"
 }
 

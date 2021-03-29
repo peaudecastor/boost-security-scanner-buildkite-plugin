@@ -42,6 +42,7 @@ setup.stubs ()
 @test "Would run full scan" {
   setup.stubs
 
+  docker_pull=(docker pull "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}")
   docker_create=(docker create
     --cidfile "/tmp/boost-scanner.cid.XXXXXX"
     --env-file "/tmp/boost-scanner.env.XXXXXX"
@@ -61,6 +62,7 @@ setup.stubs ()
   run ${PWD}/hooks/post-command
   assert_success
 
+  assert_output --partial "${docker_pull[@]}"
   assert_output --partial "${docker_create[@]}"
   assert_output --partial "${docker_cp[@]}"
   assert_output --partial "${docker_start[@]}"
@@ -75,6 +77,7 @@ setup.stubs ()
 
   setup.stubs
 
+  docker_pull=(docker pull "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}")
   docker_create=(docker create
     --cidfile "/tmp/boost-scanner.cid.XXXXXX"
     --env-file "/tmp/boost-scanner.env.XXXXXX"
@@ -91,14 +94,18 @@ setup.stubs ()
   docker_cp=(docker cp "${PWD}/." "test:/app/mount/")
   docker_start=(docker start --attach "test")
   docker_stop=(docker stop "test")
+  git_fetch=(git fetch origin
+    "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}:${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+  )
 
   run ${PWD}/hooks/post-command
   assert_success
 
+  assert_output --partial "${docker_pull[@]}"
   assert_output --partial "${docker_create[@]}"
   assert_output --partial "${docker_cp[@]}"
   assert_output --partial "${docker_start[@]}"
-  assert_output --partial "git fetch origin ${BUILDKITE_PULL_REQUEST_BASE_BRANCH}:${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+  assert_output --partial "${git_fetch[@]}"
   assert_output --partial "${docker_stop[@]}"
 
   unset docker git mktemp

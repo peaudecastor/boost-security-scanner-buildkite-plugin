@@ -2,26 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.1.0..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/1.1.0..HEAD)
 
-## 1.1.0 - 2020-03-29 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.2..v1.1.0)
+## 1.1.0 - 2020-03-29 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.2..1.1.0)
 
 - Update with docker pull image
 - Update with scanner image release channel
 
-## 1.0.2 - 2020-03-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.1..v1.0.2)
+## v1.0.2 - 2020-03-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.1..v1.0.2)
 
 - Add additional hook output
 - Update diff scans to fetch --force base branch
 - Update diff scans to unshallow current branch if needed
 
-## 1.0.1 - 2020-03-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.0..v1.0.1)
+## v1.0.1 - 2020-03-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.0.0..v1.0.1)
 
 - Update README with ecr login
 - Update tests with image overrides
 - Update hook ensuring we fetch commits from the base branch when a PR is detected
 
-## 1.0.0 - 2020-03-16 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/releases/tag/v1.0.0)
+## v1.0.0 - 2020-03-16 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/releases/tag/v1.0.0)
 
 ### Added
 

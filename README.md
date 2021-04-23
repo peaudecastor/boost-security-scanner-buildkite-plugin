@@ -16,7 +16,7 @@ steps:
           login: true
           account_ids: "706352083976"
           region: "us-east-2"
-      - peaudecastor/boost-security-scanner#v1.0.2:
+      - peaudecastor/boost-security-scanner#1.1.0:
           api_token: 'TOKEN'
 ```
 

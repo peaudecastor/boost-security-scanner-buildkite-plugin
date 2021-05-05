@@ -16,9 +16,13 @@ steps:
           login: true
           account_ids: "706352083976"
           region: "us-east-2"
-      - peaudecastor/boost-security-scanner#1.1.0:
+      - peaudecastor/boost-security-scanner#1.1.1:
           api_token: 'TOKEN'
 ```
+
+## Plugin versioning
+
+The plugin may use a version pin containing either the Major, Major.Minor or Major.Minor.Patch in order to control what updates get dynamically pulled in. It is, however, important to understand that Buildkite will not pull in any updates for a plugin it has already downloaded and cached witin the agent unless either the agent is restarted or the version pin is changed.
 
 ## Configuration
 

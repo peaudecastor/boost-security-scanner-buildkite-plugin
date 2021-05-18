@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/1.1.1..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/1.1.2..HEAD)
+
+## 1.1.2 - 2021-05-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.1.1..1.1.2)
+
+- Detect and detach mirrored git repositories
 
 ## 1.1.1 - 2021-05-05 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.1.0..1.1.1)
 

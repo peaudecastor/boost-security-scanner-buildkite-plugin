@@ -166,6 +166,12 @@ main ()
     fi
   fi
 
+  if [ -f ".git/objects/info/alternates" ]; then
+    log.info "Mirrored repository detected, detaching"
+    git repack -a -d
+    rm .git/objects/info/alternates
+  fi
+
   log.info "Creating docker container"
   docker pull "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
   docker "${CREATE_ARGS[@]}"

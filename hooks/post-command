@@ -84,15 +84,30 @@ main ()
   #
   # Define default values
   #
-  export BOOST_BRANCH_NAME=${BOOST_BRANCH_NAME:-${BUILDKITE_BRANCH:-}}
   export BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-706352083976.dkr.ecr.us-east-2.amazonaws.com/scanner}
-  export BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-1.1}
-  export BOOST_PROJECT_SLUG=${BOOST_PROJECT_SLUG:-}
+  export BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-2.0}
 
-  if [ -z "${BOOST_PROJECT_SLUG:-}" ]; then
-    BOOST_PROJECT_SLUG=$(echo "${BUILDKITE_REPO}" | \
+  #
+  # Define scanner values
+  #
+  export BOOST_GIT_BRANCH=${BOOST_BRANCH_NAME:-${BUILDKITE_BRANCH:-}}
+  export BOOST_GIT_PROJECT=${BOOST_GIT_SLUG:-}
+  export BOOST_GIT_REPOSITORY=/app/mount
+
+  if [ -z "${BOOST_GIT_SLUG:-}" ]; then
+    export BOOST_GIT_PROJECT=$(echo "${BUILDKITE_REPO}" | \
       sed -r 's/.*(\@|\/\/)(.*)(\:|\/)([^:\/]*)\/([^\/\.]*)(\.git)?/\4\/\5/'
     )
+  fi
+
+  if [ -n "${BUILDKITE_PULL_REQUEST:-}" ] &&
+     [ "${BUILDKITE_PULL_REQUEST}" != "false" ];
+  then
+    export BOOST_GIT_PULL_REQUEST=${BUILDKITE_PULL_REQUEST}
+  fi
+
+  if [ -n "${BUILDKITE_PIPELINE_DEFAULT_BRANCH:-}" ]; then
+    export BOOST_GIT_MAIN_BRANCH=${BUILDKITE_PIPELINE_DEFAULT_BRANCH}
   fi
 
   #
@@ -122,34 +137,23 @@ main ()
     --entrypoint boost
     --rm ${BOOST_DOCKER_CREATE_ARGS:-}
     "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
+    scan
+    ci
   )
-
-  CREATE_ARGS+=(scan ci "${BOOST_PROJECT_SLUG}")
-  CREATE_ARGS+=("${BOOST_BRANCH_NAME}")
 
   declare scanref
   declare headref=${BUILDKITE_COMMIT}
   declare baseref=${BUILDKITE_PULL_REQUEST_BASE_BRANCH:-}
 
+  CREATE_ARGS+=(${BOOST_ADDITIONAL_ARGS:-})
+
   if [ -n "${baseref}" ]; then
-    scanref="${baseref}..${headref}"
+    scanref="${headref}..${baseref}"
   else
     scanref="${headref}"
   fi
 
   CREATE_ARGS+=("${scanref}")
-
-  if [ -n "${BUILDKITE_PIPELINE_DEFAULT_BRANCH:-}" ]; then
-    CREATE_ARGS+=(--main-branch "${BUILDKITE_PIPELINE_DEFAULT_BRANCH}")
-  fi
-
-  if [ -n "${BUILDKITE_PULL_REQUEST:-}" ] &&
-     [ "${BUILDKITE_PULL_REQUEST}" != "false" ];
-  then
-    CREATE_ARGS+=(--pull-request "${BUILDKITE_PULL_REQUEST}")
-  fi
-
-  CREATE_ARGS+=(${BOOST_ADDITIONAL_ARGS:-})
 
   #
   # Launch containers
@@ -158,11 +162,16 @@ main ()
 
   if [ -n "${baseref:-}" ]; then
     log.info "Base branch detected, fetching ${baseref}"
-    git fetch --force origin "${baseref}:${baseref}"
+    git fetch --force origin "${baseref}"
 
     if $(git rev-parse --is-shallow-repository); then
-      log.info "Shallow repository detected, fetching complete tree"
-      git fetch --unshallow
+      log.info "Shallow repository detected, fetching since ${baseref}"
+      git fetch --negotiation-tip="${baseref}" origin "${headref}"
+    fi
+  else
+    if $(git rev-parse --is-shallow-repository); then
+      log.info "Shallow repository detected, fetching additional commits"
+      git fetch --deepen=2 origin "${headref}"
     fi
   fi
 

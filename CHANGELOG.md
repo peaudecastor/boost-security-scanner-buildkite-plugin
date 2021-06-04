@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/1.1.2..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.0..HEAD)
+
+## 2.0.0 - 2021-06-10 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/1.1.2..v2.0.0)
+
+- Updates boost scanner 2.0.0 release
 
 ## 1.1.2 - 2021-05-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.1.1..1.1.2)
 

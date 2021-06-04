@@ -49,9 +49,7 @@ setup.stubs ()
     --entrypoint boost
     --rm
     "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
-    scan ci org/repo master
-    commit
-    --main-branch master
+    scan ci commit
   )
   docker_create="${docker_create[@]}"
 
@@ -84,10 +82,8 @@ setup.stubs ()
     --entrypoint boost
     --rm
     "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
-    scan ci org/repo master
-    "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}..commit"
-    --main-branch master
-    --pull-request "${BUILDKITE_PULL_REQUEST}"
+    scan ci
+    "commit..${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
   )
   docker_create="${docker_create[@]}"
 

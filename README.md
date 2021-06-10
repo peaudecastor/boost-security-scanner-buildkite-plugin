@@ -10,8 +10,7 @@ Add the following to your `pipeline.yml`:
 
 ```yml
 steps:
-  - command: YOUR BUILD COMMAND HERE
-    plugins:
+  - plugins:
       - ecr#v2.3.0:
           login: true
           account_ids: "706352083976"

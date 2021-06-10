@@ -148,14 +148,6 @@ main ()
 
   CREATE_ARGS+=(${BOOST_ADDITIONAL_ARGS:-})
 
-  if [ -n "${baseref}" ]; then
-    scanref="${headref}..${baseref}"
-  else
-    scanref="${headref}"
-  fi
-
-  CREATE_ARGS+=("${scanref}")
-
   #
   # Launch containers
   #
@@ -163,7 +155,8 @@ main ()
 
   if [ -n "${baseref:-}" ]; then
     log.info "Base branch detected, fetching ${baseref}"
-    git fetch --force origin "${baseref}"
+    git fetch --force origin --depth=1 "${baseref}"
+    baseref=$(git rev-parse FETCH_HEAD)
 
     if $(git rev-parse --is-shallow-repository); then
       log.info "Shallow repository detected, fetching since ${baseref}"
@@ -181,6 +174,14 @@ main ()
     git repack -a -d
     rm .git/objects/info/alternates
   fi
+
+  if [ -n "${baseref}" ]; then
+    scanref="${headref}..${baseref}"
+  else
+    scanref="${headref}"
+  fi
+
+  CREATE_ARGS+=("${scanref}")
 
   log.info "Creating docker container"
   docker pull "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"

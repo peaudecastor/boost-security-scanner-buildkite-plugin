@@ -32,7 +32,7 @@ variables in your buildkite environment. All such environment variables should
 be capitalized and prefixed with either `BOOST` or
 `BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER`.
 
-### `additional_args` (Optional, list[str])
+### `additional_args` (Optional, string)
 
 Additional CLI args to pass to the `boost` cli.
 

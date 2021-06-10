@@ -8,10 +8,8 @@ requirements:
 configuration:
   properties:
     additional_args:
-      description: List of additional CLI arguments to pass
-      type: array
-      items:
-        type: string
+      description: Additional CLI arguments to pass to boost cli
+      type: string
     api_endpoint:
       description: Boost Security API endpoint override
       type: string

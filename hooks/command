@@ -136,6 +136,7 @@ main ()
     --env-file "${ENV_FILE}"
     --entrypoint boost
     --rm ${BOOST_DOCKER_CREATE_ARGS:-}
+    --tty \
     "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
     scan
     ci

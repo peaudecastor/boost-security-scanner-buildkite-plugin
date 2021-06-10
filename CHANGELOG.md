@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - Updates boost scanner 2.0.0 release
 - Updates plugin to run as command hook
+- Updates docker with --tty for colors
 
 ## 1.1.2 - 2021-05-18 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v1.1.1..1.1.2)
 

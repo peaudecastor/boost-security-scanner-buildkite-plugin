@@ -2,7 +2,7 @@
 
 Executes the Boost Security Scanner cli tool to scan repositories for
 vulnerabilities and uploads results to the Boost API. This plugin
-runs as a post-command hook.
+runs as a command hook.
 
 ## Example
 

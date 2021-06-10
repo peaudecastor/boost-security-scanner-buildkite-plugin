@@ -57,7 +57,7 @@ setup.stubs ()
   docker_start=(docker start --attach "test")
   docker_stop=(docker stop "test")
 
-  run ${PWD}/hooks/post-command
+  run ${PWD}/hooks/command
   assert_success
 
   assert_output --partial "${docker_pull[@]}"
@@ -94,7 +94,7 @@ setup.stubs ()
     "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}:${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
   )
 
-  run ${PWD}/hooks/post-command
+  run ${PWD}/hooks/command
   assert_success
 
   assert_output --partial "${docker_pull[@]}"

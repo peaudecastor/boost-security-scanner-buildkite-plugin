@@ -177,6 +177,7 @@ main ()
   fi
 
   CREATE_ARGS+=("${scanref}")
+  echo "${CREATE_ARGS[@]}"
 
   log.info "Creating docker container"
   docker pull "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"

@@ -1,192 +1,22 @@
 #!/bin/bash
 
-set -e
-set -o pipefail
-set -u
-
-#
-# State
-#
-declare -a TMP_FILES
-declare CONTAINER_ID
-
-#
-# Helpers
-#
-log.info ()
-{ echo "[Plugin] ${*}"; }
-
-container.stop ()
-{
-  if [ -n "${CONTAINER_ID:-}" ]; then
-    docker stop "${CONTAINER_ID}" &>/dev/null || true
-    unset CONTAINER_ID
-  fi
-}
-
-env.list ()
-{ awk 'BEGIN{for(v in ENVIRON) print v}'; }
-
-env.list.params ()
-{ env.list | grep "^${VAR_PREFIX}_"; }
-
-env.list.boost ()
-{ env.list | grep "^BOOST_"; }
-
-tmp.create ()
-{ # $1=label
-  tmp_file=$(mktemp -t boost-scanner.${1}.XXXXXX)
-  TMP_FILES+=(${tmp_file})
-}
-
-tmp.clean ()
-{
-  for file in "${TMP_FILES[@]:-}"; do
-    if test -f "${file}"; then
-      rm -f "${file}"
-    fi
-  done
-
-  TMP_FILES=()
-}
-
-#
-# Main
-#
-main.exit ()
-{
-  container.stop
-  tmp.clean
-
-  while read name; do
-    unset "${name}"
-  done < <(env.list.boost)
-}
+declare SELF="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+source ${SELF}/../lib/action.bash
 
 main ()
 {
-  trap 'main.exit' EXIT
+  declare action=$(config.get "ACTION")
 
-  #
-  # Local vars
-  #
-  declare tmp_file
-  declare VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
-
-
-  #
-  # Remap plugin parameters to BOOST_ environment vars
-  #
-  while read name; do
-    export "${name/${VAR_PREFIX}/BOOST}=${!name:-}"
-  done < <(env.list.params)
-
-  #
-  # Define default values
-  #
-  export BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-706352083976.dkr.ecr.us-east-2.amazonaws.com/scanner}
-  export BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-2.0}
-
-  #
-  # Define scanner values
-  #
-  export BOOST_GIT_BRANCH=${BOOST_BRANCH_NAME:-${BUILDKITE_BRANCH:-}}
-  export BOOST_GIT_PROJECT=${BOOST_GIT_SLUG:-}
-  export BOOST_GIT_REPOSITORY=/app/mount
-
-  if [ -z "${BOOST_GIT_SLUG:-}" ]; then
-    export BOOST_GIT_PROJECT=$(echo "${BUILDKITE_REPO}" | \
-      sed -r 's/.*(\@|\/\/)(.*)(\:|\/)([^:\/]*)\/([^\/\.]*)(\.git)?/\4\/\5/'
-    )
+  if [ -z "${action:-}" ]; then
+    log.error "the 'action' option must be one of 'scan', 'exec' or 'complete'"
+    log.error "assuming default 'action' of 'scan'"
   fi
 
-  if [ -n "${BUILDKITE_PULL_REQUEST:-}" ] &&
-     [ "${BUILDKITE_PULL_REQUEST}" != "false" ];
-  then
-    export BOOST_GIT_PULL_REQUEST=${BUILDKITE_PULL_REQUEST}
-  fi
-
-  if [ -n "${BUILDKITE_PIPELINE_DEFAULT_BRANCH:-}" ]; then
-    export BOOST_GIT_MAIN_BRANCH=${BUILDKITE_PIPELINE_DEFAULT_BRANCH}
-  fi
-
-  #
-  # Create docker env file
-  #
-  tmp.create env
-  ENV_FILE="${tmp_file}"
-  unset tmp_file
-
-  while read name; do
-    echo "${name}=${!name:-}" >> "${ENV_FILE}"
-  done < <(env.list.boost)
-
-  #
-  # Build docker container
-  #
-  tmp.create cid
-  CID_FILE="${tmp_file}"
-  unset tmp_file
-
-  rm -f "${CID_FILE}"
-
-  declare -a CREATE_ARGS
-  CREATE_ARGS=(create
-    --cidfile "${CID_FILE}"
-    --env-file "${ENV_FILE}"
-    --entrypoint boost
-    --rm ${BOOST_DOCKER_CREATE_ARGS:-}
-    --tty \
-    "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
-    scan
-    ci
-  )
-
-  declare scanref
-  declare headref=${BUILDKITE_COMMIT}
-  declare baseref=${BUILDKITE_PULL_REQUEST_BASE_BRANCH:-}
-
-  CREATE_ARGS+=(${BOOST_ADDITIONAL_ARGS:-})
-
-  #
-  # Launch containers
-  #
-  log.info "Initializing"
-
-  if [ -n "${baseref:-}" ]; then
-    log.info "Base branch detected, fetching ${baseref}"
-    git fetch --force origin "${baseref}"
-    baseref=$(git rev-parse FETCH_HEAD)
-  else
-    if $(git rev-parse --is-shallow-repository); then
-      log.info "Shallow repository detected, fetching additional commits"
-      git fetch --deepen=2 origin "${headref}"
-    fi
-  fi
-
-  if [ -f ".git/objects/info/alternates" ]; then
-    log.info "Mirrored repository detected, detaching"
-    git repack -a -d
-    rm .git/objects/info/alternates
-  fi
-
-  if [ -n "${baseref}" ]; then
-    scanref="${headref}..${baseref}"
-  else
-    scanref="${headref}"
-  fi
-
-  CREATE_ARGS+=("${scanref}")
-  echo "${CREATE_ARGS[@]}"
-
-  log.info "Creating docker container"
-  docker pull "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
-  docker "${CREATE_ARGS[@]}"
-  CONTAINER_ID=$(cat "${CID_FILE}")
-  docker cp "${BUILDKITE_BUILD_CHECKOUT_PATH}/." "${CONTAINER_ID}:/app/mount/"
-
-  log.info "Starting scanner for ${scanref}"
-  docker start --attach "${CONTAINER_ID}"
+  case "${action:-scan}" in
+    exec)       main.exec     ;;
+    scan)       main.scan     ;;
+    complete)   main.complete ;;
+  esac
 }
 
 main

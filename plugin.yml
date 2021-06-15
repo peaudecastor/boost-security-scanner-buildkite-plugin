@@ -7,6 +7,10 @@ requirements:
   - mktemp
 configuration:
   properties:
+    action:
+      description: Action to perform, one of: exec, scan or complete
+      type: string
+      pattern: "complete|exec|scan"
     additional_args:
       description: Additional CLI arguments to pass to boost cli
       type: string
@@ -15,6 +19,9 @@ configuration:
       type: string
     api_token:
       description: Boost Security API token
+      type: string
+    exec_command:
+      description: Command to run when in exec mode
       type: string
     docker_create_args:
       description: Additional arguments to pass to the docker create step

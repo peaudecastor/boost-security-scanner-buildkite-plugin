@@ -10,7 +10,8 @@ Add the following to your `pipeline.yml`:
 
 ```yml
 steps:
-  - plugins:
+  - label: "BoostSecurity Scanner"
+    plugins:
       - ecr#v2.3.0:
           login: true
           account_ids: "706352083976"
@@ -31,9 +32,19 @@ variables in your buildkite environment. All such environment variables should
 be capitalized and prefixed with either `BOOST` or
 `BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER`.
 
+### `action` (Required, string)
+
+The action to perform by the plugin:
+- `scan`: Executes the BoostSecurity native scanner with a number of plugins
+- `exec`: Executes a custom command which outputs Sarif to stdout.
+- `complete`: Completes a Scan when in `partial` mode.
+
 ### `additional_args` (Optional, string)
 
 Additional CLI args to pass to the `boost` cli.
+
+Optional arguments:
+- `--partial`: Enables partial mode, allowing you to combine the results of multiple scans.
 
 ### `api_endpoint` (Optional, string)
 
@@ -51,6 +62,12 @@ file. Intead, either expose the environment variable or refer to Builtkite's
 
 Optional additional arguments to pass to `docker create` when preparing the
 scanner container.
+
+### `exec_command` (Optional, string)
+
+A custom command to run in by the `exec` action. This should be a command which executes a custom scanner and outputs only a Sarif document to stdout.
+
+The value may additionally contain the `%CWD%` placeholder which will be replaced by the correct working directory during evaluation. The is especially useful when combined with volume mounts in a docker command.
 
 ### `project_slug` (Optional, string)
 

@@ -166,6 +166,7 @@ main.exec ()
     exit 1
   fi
 
+  declare BOOST_ADDITIONAL_ARGS=${BOOST_ADDITIONAL_ARGS:-$(config.get "ADDITIONAL_ARGS")}
   ${BOOST_BIN} scan ci ${BOOST_ADDITIONAL_ARGS:-} --sarif-cmd "${BOOST_EXEC_COMMAND}"
 }
 

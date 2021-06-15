@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.0..HEAD)
 
+## 2.0.1 - 2021-06-10 - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.0..v2.0.1)
+
 - Updates hook internals
 - Add boost cli
 - Add new 'action' key to support 'exec' mode and partial scans

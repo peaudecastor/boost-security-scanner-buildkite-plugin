@@ -7,8 +7,6 @@ set -u
 declare VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 
 export BOOST_TMP_DIR=${BOOST_TMP_DIR:-${WORKSPACE_TMP:-${TMPDIR:-/tmp}}}
-mkdir -p "${BOOST_TMP_DIR}" &>/dev/null
-
 export BOOST_BIN=${BOOST_BIN:-${BOOST_TMP_DIR}/boost.sh}
 export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost-cli}
 export BOOST_EXE=${BOOST_EXE:-${BOOST_CLI}/boost.dist/boost}
@@ -38,9 +36,7 @@ init.config ()
 {
   log.info "initializing configuration"
 
-  declare api_endpoint="https://api.boostsecurity.io"
-
-  export BOOST_API_ENDPOINT=${BOOST_API_ENDPOINT:-$(config.get "API_ENDPOINT" api_endpoint)}
+  export BOOST_API_ENDPOINT=${BOOST_API_ENDPOINT:-$(config.get "API_ENDPOINT" "https://api.boostsecurity.io")}
   export BOOST_API_TOKEN=${BOOST_API_TOKEN:-$(config.get "API_TOKEN")}
 
   export BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-$(config.get "SCANNER_IMAGE")}

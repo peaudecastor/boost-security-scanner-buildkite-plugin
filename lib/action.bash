@@ -6,10 +6,15 @@ set -u
 
 declare VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 
-export BOOST_BIN=${BOOST_BIN:-${TMPDIR:-/tmp}/boost.sh}
-export BOOST_CLI=${BOOST_CLI:-${TMPDIR:-/tmp}/boost-cli}
+export BOOST_TMP_DIR=${BOOST_TMP_DIR:-${WORKSPACE_TMP:-${TMPDIR:-/tmp}}}
+
+export BOOST_BIN=${BOOST_BIN:-${BOOST_TMP_DIR}/boost.sh}
+export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost-cli}
 export BOOST_EXE=${BOOST_EXE:-${BOOST_CLI}/boost.dist/boost}
-export BOOST_ENV=${BOOST_ENV:-${TMPDIR:-/tmp}/boost.env}
+export BOOST_ENV=${BOOST_ENV:-${BOOST_TMP_DIR}/boost.env}
+
+echo "BOOST_TMP_DIR=${BOOST_TMP_DIR}"
+echo "BOOST_BIN=${BOOST_BIN}"
 
 config.get ()
 { # $1=key, [$2=default]

@@ -71,8 +71,10 @@ init.cli ()
   fi
 
   log.info "installing cli to ${BOOST_BIN}"
+  set -x
   curl --silent --output "${BOOST_BIN}" "${BOOST_CLI_URL}"
   chmod 755 "${BOOST_BIN}"
+  set +x
 
   if ! "${BOOST_BIN}" version; then
     log.error "failed downloading cli from ${BOOST_CLI_URL}"

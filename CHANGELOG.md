@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.2..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.3..HEAD)
+
+## 2.0.3 - 2021-06-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.2..2.0.3)
+
+- Adds BOOST\_TMP\_DIR environment variable for CLI installation path
+- Fixes BOOST\_API\_ENDPOINT default value
 
 ## 2.0.2 - 2021-06-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.1..2.0.2)
 

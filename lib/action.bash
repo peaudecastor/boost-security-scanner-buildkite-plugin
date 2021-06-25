@@ -12,9 +12,6 @@ export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost-cli}
 export BOOST_EXE=${BOOST_EXE:-${BOOST_CLI}/boost.dist/boost}
 export BOOST_ENV=${BOOST_ENV:-${BOOST_TMP_DIR}/boost.env}
 
-echo "BOOST_TMP_DIR=${BOOST_TMP_DIR}"
-echo "BOOST_BIN=${BOOST_BIN}"
-
 config.get ()
 { # $1=key, [$2=default]
   declare _varname=${VAR_PREFIX}_${1}
@@ -68,6 +65,7 @@ init.cli ()
 
   log.info "installing cli to ${BOOST_BIN}"
   set -x
+  mkdir -p "${BOOST_BIN}"
   curl --silent --output "${BOOST_BIN}" "${BOOST_CLI_URL}"
   chmod 755 "${BOOST_BIN}"
   set +x

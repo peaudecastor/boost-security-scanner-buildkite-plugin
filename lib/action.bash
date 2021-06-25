@@ -7,6 +7,7 @@ set -u
 declare VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 
 export BOOST_TMP_DIR=${BOOST_TMP_DIR:-${WORKSPACE_TMP:-${TMPDIR:-/tmp}}}
+mkdir -p "${BOOST_TMP_DIR}" &>/dev/null
 
 export BOOST_BIN=${BOOST_BIN:-${BOOST_TMP_DIR}/boost.sh}
 export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost-cli}

@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.3..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.4..HEAD)
+
+## 2.0.4 - 2021-06-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.3..2.0.4)
 
 - Remove boost-cli caching
 

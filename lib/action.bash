@@ -59,10 +59,6 @@ init.config ()
 
 init.cli ()
 {
-  if [ -f "${BOOST_BIN:-}" ]; then
-    return
-  fi
-
   log.info "installing cli to ${BOOST_BIN}"
   mkdir -p "${BOOST_TMP_DIR}"
   curl --silent --output "${BOOST_BIN}" "${BOOST_CLI_URL}"

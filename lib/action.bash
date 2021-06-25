@@ -65,7 +65,7 @@ init.cli ()
 
   log.info "installing cli to ${BOOST_BIN}"
   set -x
-  mkdir -p "${BOOST_BIN}"
+  mkdir -p "${BOOST_TMP_DIR}"
   curl --silent --output "${BOOST_BIN}" "${BOOST_CLI_URL}"
   chmod 755 "${BOOST_BIN}"
   set +x

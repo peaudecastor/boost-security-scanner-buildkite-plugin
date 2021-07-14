@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.4..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.5..HEAD)
+
+## 2.0.5 - 2021-06-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.4..2.0.5)
+
+- add `exec_full_repo` to require a full repo and not delete unmodified files on diff scans
+- add `diff_scan_timeout` to optionally set diff scan expiry ( defaults to 120 )
 
 ## 2.0.4 - 2021-06-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.3..2.0.4)
 

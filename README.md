@@ -70,6 +70,14 @@ A custom command to run in by the `exec` action. This should be a command which 
 
 The value may additionally contain the `%CWD%` placeholder which will be replaced by the correct working directory during evaluation. The is especially useful when combined with volume mounts in a docker command.
 
+### `exec_full_scan` (Optional, boolean)
+
+By default, when performing a scan on a non-master branch, all files not having been modified as part of the PR will be deleted. This optimization may not always work for certain scanners. Enabling this option, will ensure that the `exec_command` runs against the full repository branch.
+
+### `diff_scan_timeout` (Optional, integer)
+
+Optional override indicating to the API how many seconds should be waited before failing the scan. This defaults to 120 seconds.
+
 ### `project_slug` (Optional, string)
 
 Optional override for the project unique identifier. If undefined, this will

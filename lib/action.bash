@@ -39,8 +39,6 @@ init.config ()
   export BOOST_SCANNER_IMAGE=${BOOST_SCANNER_IMAGE:-$(config.get "SCANNER_IMAGE")}
   export BOOST_SCANNER_VERSION=${BOOST_SCANNER_VERSION:-$(config.get "SCANNER_VERSION")}
 
-  export BOOST_EXEC_COMMAND=$(config.get "EXEC_COMMAND")
-
   export BOOST_CLI_ARGUMENTS=${BOOST_CLI_ARGUMENTS:-$(config.get "ADDITIONAL_ARGS")}
   export BOOST_CLI_VERSION=${BOOST_CLI_VERSION:-$(config.get "CLI_VERSION" "2.0")}
 
@@ -53,7 +51,11 @@ init.config ()
     BOOST_CLI_URL+="/boost/linux/glibc/amd64/${BOOST_CLI_VERSION}/boost.sh"
   fi
 
+  export BOOST_DIFF_SCAN_TIMEOUT=$(config.get "DIFF_SCAN_TIMEOUT")
+  export BOOST_EXEC_COMMAND=$(config.get "EXEC_COMMAND")
+  export BOOST_EXEC_FULL_REPO=$(config.get "EXEC_FULL_REPO")
   export BOOST_GIT_PROJECT=$(config.get "PROJECT_SLUG")
+
   export DOCKER_CREATE_ARGS=$(config.get "DOCKER_CREATE_ARGS")
 }
 

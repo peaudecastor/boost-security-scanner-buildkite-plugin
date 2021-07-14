@@ -26,6 +26,12 @@ configuration:
     exec_command:
       description: Command to run when in exec mode
       type: string
+    exec_full_repo:
+      description: Perform diff scans against a full repo without removing unchanged files
+      type: boolean
+    diff_scan_timeout:
+      description: Amount of seconds after which the diff scan should timeout and be considered failed
+      type: integer
     docker_create_args:
       description: Additional arguments to pass to the docker create step
       type: string

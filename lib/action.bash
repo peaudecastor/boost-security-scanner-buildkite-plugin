@@ -7,10 +7,11 @@ set -u
 declare VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 
 export BOOST_TMP_DIR=${BOOST_TMP_DIR:-${WORKSPACE_TMP:-${TMPDIR:-/tmp}}}
-export BOOST_BIN=${BOOST_BIN:-${BOOST_TMP_DIR}/boost.sh}
-export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost-cli}
+export BOOST_TMP_DIR_FOR_STEP=${BOOST_TMP_DIR}/${BUILDKITE_STEP_ID}
+export BOOST_BIN=${BOOST_BIN:-${BOOST_TMP_DIR_FOR_STEP}/boost.sh}
+export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR_FOR_STEP}/boost-cli}
 export BOOST_EXE=${BOOST_EXE:-${BOOST_CLI}/boost.dist/boost}
-export BOOST_ENV=${BOOST_ENV:-${BOOST_TMP_DIR}/boost.env}
+export BOOST_ENV=${BOOST_ENV:-${BOOST_TMP_DIR_FOR_STEP}/boost.env}
 
 config.get ()
 { # $1=key, [$2=default]
@@ -62,7 +63,7 @@ init.config ()
 init.cli ()
 {
   log.info "installing cli to ${BOOST_BIN}"
-  mkdir -p "${BOOST_TMP_DIR}"
+  mkdir -p "${BOOST_TMP_DIR_FOR_STEP}"
   curl --silent --output "${BOOST_BIN}" "${BOOST_CLI_URL}"
   chmod 755 "${BOOST_BIN}"
 

@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.5..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-buildkite-plugin/compare/v2.0.6..HEAD)
+
+## 2.0.6 - 2021-08-30 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.5..2.0.6)
 
 - migrate downloader to get-boost-cli
 - migrate cli installation path to tmp\_dir/boost/cli/<version>

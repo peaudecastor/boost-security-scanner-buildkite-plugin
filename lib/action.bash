@@ -8,9 +8,8 @@ declare VAR_PREFIX=BUILDKITE_PLUGIN_BOOST_SECURITY_SCANNER
 
 export BOOST_TMP_DIR=${BOOST_TMP_DIR:-${WORKSPACE_TMP:-${TMPDIR:-/tmp}}}
 export BOOST_BIN=${BOOST_BIN:-${BOOST_TMP_DIR}/boost.sh}
-export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost-cli}
+export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost/cli/latest}
 export BOOST_EXE=${BOOST_EXE:-${BOOST_CLI}/boost.dist/boost}
-export BOOST_ENV=${BOOST_ENV:-${BOOST_TMP_DIR}/boost.env}
 
 config.get ()
 { # $1=key, [$2=default]
@@ -21,12 +20,12 @@ config.get ()
 
 log.info ()
 { # $@=message
-  printf "$(date +'%H:%m:%S') [\033[34m%s\033[0m] %s\n" "INFO" "${*}";
+  printf "$(date +'%H:%M:%S') [\033[34m%s\033[0m] %s\n" "INFO" "${*}";
 }
 
 log.error ()
 { # $@=message
-  printf "$(date +'%H:%m:%S') [\033[31m%s\033[0m] %s\n" "ERROR" "${*}";
+  printf "$(date +'%H:%M:%S') [\033[31m%s\033[0m] %s\n" "ERROR" "${*}";
 }
 
 init.config ()
@@ -45,12 +44,6 @@ init.config ()
   export BOOST_CLI_URL=${BOOST_CLI_URL:-${BOOST_API_ENDPOINT/api/assets}}
          BOOST_CLI_URL=${BOOST_CLI_URL%*/}
 
-  if [ -d /lib/apk ]; then
-    BOOST_CLI_URL+="/boost/linux/alpine/amd64/${BOOST_CLI_VERSION}/boost.sh"
-  else
-    BOOST_CLI_URL+="/boost/linux/glibc/amd64/${BOOST_CLI_VERSION}/boost.sh"
-  fi
-
   export BOOST_DIFF_SCAN_TIMEOUT=$(config.get "DIFF_SCAN_TIMEOUT")
   export BOOST_EXEC_COMMAND=$(config.get "EXEC_COMMAND")
   export BOOST_EXEC_FULL_REPO=$(config.get "EXEC_FULL_REPO")
@@ -63,13 +56,8 @@ init.cli ()
 {
   log.info "installing cli to ${BOOST_BIN}"
   mkdir -p "${BOOST_TMP_DIR}"
-  curl --silent --output "${BOOST_BIN}" "${BOOST_CLI_URL}"
-  chmod 755 "${BOOST_BIN}"
-
-  if ! "${BOOST_BIN}" version; then
-    log.error "failed downloading cli from ${BOOST_CLI_URL}"
-    exit 1
-  fi
+  declare BOOST_DOWNLOAD_URL=${BOOST_CLI_URL}/boost/get-boost-cli
+  curl --silent "${BOOST_DOWNLOAD_URL}" | bash
 }
 
 main.complete ()
@@ -78,8 +66,6 @@ main.complete ()
   init.cli
 
   ${BOOST_EXE} scan complete
-  ! test -f "${BOOST_BIN:-}" || rm "${BOOST_BIN}"
-  ! test -f "${BOOST_ENV:-}" || rm "${BOOST_ENV}"
 }
 
 main.exec ()

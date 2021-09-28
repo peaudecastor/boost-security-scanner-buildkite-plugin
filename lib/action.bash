@@ -65,7 +65,7 @@ main.complete ()
   init.config
   init.cli
 
-  ${BOOST_EXE} scan complete
+  ${BOOST_EXE} scan complete ${BOOST_CLI_ARGUMENTS:-}
 }
 
 main.exec ()
